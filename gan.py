@@ -10,6 +10,7 @@
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 from bow_training import bird_classify
 from math import ceil
 
@@ -33,6 +34,24 @@ class Generator(nn.Module):
             nn.ConvTranspose2d(layer_2_channels, layer_3_channels, 3),
             nn.BatchNorm2d(layer_3_channels),
             nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(layer_3_channels, layer_3_channels, 3),
+            nn.BatchNorm2d(layer_3_channels),
+            nn.ReLU(True),
             nn.Tanh()
         )
 
@@ -42,22 +61,29 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self):
         super(Discriminator, self).__init__()
-        self.net = nn.Sequential(
-            nn.Conv2d(input_size, 134, 1),
-            nn.BatchNorm2d(134),
-            nn.LeakyReLU(True),
-            nn.Conv2d(134, 68, 1),
-            nn.BatchNorm2d(),
-            nn.LeakyReLU(True),
-            nn.Conv2d(3, 3, 1),
-            nn.BatchNorm2d(),
-            nn.LeakyReLU(True)
-        )
+        self.conv1 = nn.Conv2d(3, 100, kernel_size=3, stride=2)
+        #self.conv1_bn = nn.BatchNorm2d(100)
+        self.conv2 = nn.Conv2d(100, 200, kernel_size=3, stride=2)
+        #self.conv2_bn = nn.BatchNorm2d(200)
+        self.out = nn.Conv2d(400, 1, kernel_size=4, stride=1)
 
-    def forward(self, x):
-        return self.net(x)
+    def forward(self, x, text_embedding):
+        print('input shape:', x.shape)
+        #x = self.conv1_bn(self.conv1(x))
+        x = self.conv1(x)
+        x = F.leaky_relu(x)
+        print('conv1 shape:', x.shape)
+        #x = self.conv2_bn(self.conv2(x))
+        x = self.conv2(x)
+        x = F.leaky_relu(x)
+        print('conv2 shape:', x.shape)
+
+        # Concatenate replicated text embedding
+        x = torch.cat((x, text_embedding), 1)
+
+        return self.out(x)
 
 
 def main():
@@ -71,11 +97,16 @@ def main():
     text_embedding = text_embedder(torch.rand(500))
     text_embedding = torch.reshape(text_embedding, (1, 200, 1, 1))
 
-    # Doing a dry run of the untrained generator on one image
+    # Dry run of the untrained generator on one image
     gen = Generator()
     output = gen(text_embedding)
     print(output.shape)
 
+    # Dry run the discriminator
+    dis = Discriminator()
+
+    out = dis(output, text_embedding.repeat(1, 1, 4, 4))
+    print('d score:', out)
 
 if __name__ == '__main__':
     main()
