@@ -20,14 +20,12 @@ import torchvision.transforms.functional as TF
 
 import text_encode_functions as tef
 
-# main function
+# This will train the bird classifier on the training dataset, save the classifier weights, and save a loss plot
 def main(argv):
 
     master_word_list = tef.gen_word_dict()
     
     image_dir_path = "CUB_200_2011/CUB_200_2011/images"
-#    class_names = os.listdir(image_dir_path)
-#    class_names.remove(".DS_Store")
 
     # Get information on image classes, train-test split
     image_ind = pd.read_csv("CUB_200_2011/CUB_200_2011/images.txt", sep = " ", header=None, names=["Index","Image"])
@@ -67,17 +65,14 @@ def main(argv):
     plt.figure()
     # Plot the training loss after each batch is processed
     plt.plot( np.arange(0, num_train_batches * num_epochs)/num_train_batches, training_loss )
-#    plt.plot( training_loss )
-#    # Plot the test set loss after each epoch
-#    plt.plot( np.arange(1, num_epochs+1), test_loss, "r." )
-#    plt.legend(["Train loss", "Test loss"])
+
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.title("Loss over training")
     plt.savefig("loss_plot.jpg")
 
     # Save the model weights
-#    torch.save(model.state_dict(), "bow_weights.pth")
+    torch.save(model.state_dict(), "bow_weights.pth")
     
 
     return

@@ -20,7 +20,7 @@ import torchvision.transforms.functional as TF
 
 import text_encode_functions as tef
 
-# main function
+# this function will load the saved bird classifier and print the accuracy, precision, and recall as calculated on the test set
 def main(argv):
 
     master_word_list = tef.gen_word_dict()

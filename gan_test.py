@@ -1,6 +1,6 @@
 #
-# Phil Butler
-# gan.py
+# Phil Butler, Brendan Martin
+# gan_test.py
 # Fall 2022
 # CS 7180
 # Resources:
@@ -19,7 +19,8 @@ import text_encode_functions as tef
 import gan_functions as gf
 
 
-
+# this function will load the saved GAN and generate nine images with the generator
+# a plot of the images is saved
 def main():
     master_word_list = tef.gen_word_dict()
     # Get information on image classes, train-test split

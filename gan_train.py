@@ -1,6 +1,6 @@
 #
-# Phil Butler
-# gan.py
+# Phil Butler, Brendan Martin
+# gan_train.py
 # Fall 2022
 # CS 7180
 # Resources:
@@ -19,7 +19,7 @@ import text_encode_functions as tef
 import gan_functions as gf
 
 
-
+# This will train the GAN on the training dataset, save the GAN weights, and save a loss plot
 def main():
     master_word_list = tef.gen_word_dict() # length = 500
     # Get information on image classes, train-test split
@@ -49,7 +49,7 @@ def main():
     
     # hyperparameters
     learning_rate = 1e-3
-    num_epochs = 10
+    num_epochs = 50
     num_train_batches = 50
     
     # training components
